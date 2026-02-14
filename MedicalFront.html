@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>의료 데이터 번역 및 분석</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<style>
+  body {
+  font-family: Arial, sans-serif;
+  background: #f4f4f9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+.container {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 600px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+textarea {
+  width: 100%;
+  height: 150px;
+  margin-bottom: 10px;
+  padding: 10px;
+}
+button {
+  background: #4CAF50;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  cursor: pointer;
+}
+button:hover {
+  background: #45a049;
+}
+#result {
+  margin-top: 20px;
+  white-space: pre-line;
+}
+</style>
+<script>
+async function analyzeText() {
+  const inputText = document.getElementById("inputText").value;
+  const response = await fetch("/analyze", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ text: inputText })
+  });
+  const data = await response.json();
+  document.getElementById("result").innerText = data.result;
+}
+
+function downloadExcel() {
+  window.location.href = "/download";
+}
+async function resetResults() {
+  const response = await fetch("/reset", { method: "POST" });
+  const data = await response.json();
+  alert(data.message);
+  document.getElementById("result").innerText = ""; // clear displayed result
+}
+</script>
+<body>
+  <div class="container">
+    <h1>의료 데이터 번역 및 분석</h1>
+    <textarea id="inputText" placeholder="영문 의료 데이터를 입력하세요"></textarea>
+    <button onclick="analyzeText()">분석하기</button>
+    <button onclick="downloadExcel()">결과 다운로드</button>
+    <button onclick="resetResults()">결과 초기화</button>
+    <div id="result"></div>
+  </div>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script></script>
+</body>
+</html>
